@@ -28,7 +28,7 @@ ___
 |Id|Title|Description|
 |--|-----|-----------|
 |1 | Structural Architecture| MVVM && CLEAN ARCHITECTURE
-|2 | Technologies | AndroidX,Coroutine,LiveData,DataBinding,Hilt,Flow,
+|2 | Technologies | AndroidX,Coroutine,LiveData,DataBinding,Flow,
 |3 | Theme and Components | Material
 |4 | Development Language | Kotlin
 
