@@ -2,8 +2,10 @@ package com.bluettoth.bluetoothflow.presentation.fragment.bluetoothFragment
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.Dialog
 import android.bluetooth.BluetoothAdapter
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
@@ -55,10 +57,10 @@ class BluetoothFragment :
         adapter = DiscoverRecyclerAdapter()
         adapter?.setOnItemClickListener {
 
-                viewModel.connect(it.bluetoothDevice)
-                    .observe(viewLifecycleOwner) {
-                        checkBtConnectionState(it)
-                    }
+            viewModel.connect(it.bluetoothDevice)
+                .observe(viewLifecycleOwner) {
+                    checkBtConnectionState(it)
+                }
         }
         onFragmentLauncher = { resultCode, data, requestCode ->
             if (resultCode == Activity.RESULT_OK) {
@@ -119,14 +121,22 @@ class BluetoothFragment :
     private fun checkBtConnectionState(btConnection: BtConnection) {
         when (btConnection) {
             is BtConnection.BtConnectingLoadingState -> {
-                Toast.makeText(requireContext(), "CONNECTING PLEASE WAIT...", Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), "CONNECTING PLEASE WAIT...", Toast.LENGTH_LONG)
+                    .show()
             }
+
             is BtConnection.BtConnectedState -> {
                 Toast.makeText(requireContext(), "CONNECTED", Toast.LENGTH_LONG).show()
             }
+
             is BtConnection.BtErrorConnectingState -> {
-                Toast.makeText(requireContext(), "SOMETHING WENT WRONG WHILE CONNECTING", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    requireContext(),
+                    "SOMETHING WENT WRONG WHILE CONNECTING",
+                    Toast.LENGTH_LONG
+                ).show()
             }
+
             is BtConnection.BtDisconnectedState -> {
                 Toast.makeText(requireContext(), "DISCONNECTED", Toast.LENGTH_SHORT).show()
             }
@@ -138,8 +148,6 @@ class BluetoothFragment :
         super.onDestroyView()
         loading?.dismiss()
     }
-
-
 
 
     // Called when clicking on a device entry to start the CommunicateActivity
@@ -185,6 +193,23 @@ class BluetoothFragment :
             onNeverAsk {
             }
             onShowRationale { _, request ->
+                val alertDialog =
+                    AlertDialog
+                        .Builder(requireContext())
+                        .setMessage("You must allow permission")
+                        .setTitle("Permission")
+                        .setCancelable(true)
+                        .setPositiveButton(
+                            "Allow"
+                        ) { dialog, p1 ->
+                            request.proceed()
+                            dialog.dismiss()
+                        }.setNegativeButton("Cancel") { dialog, p1 ->
+                            request.cancel()
+                            dialog.dismiss()
+                        }
+                        .create()
+                        .show()
             }
         }
     }
